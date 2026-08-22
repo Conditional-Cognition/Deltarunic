@@ -1,8 +1,9 @@
 package com.cogworks.deltarunic.client.gui;
 
-import com.cogworks.deltarunic.battle.BattleAttackData;
-import com.cogworks.deltarunic.client.records.MobBattleResource;
-import com.cogworks.deltarunic.client.records.MobResourceManager;
+import com.cogworks.deltarunic.battle.data.EntityBattleConfig;
+import com.cogworks.deltarunic.battle.data.EntityBattleConfigLoader;
+import com.cogworks.deltarunic.client.records.DialogueSelector;
+import com.cogworks.deltarunic.client.records.DialogueState;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,14 +23,15 @@ public class DeltaruneBattleGui extends Screen {
 
     private final LivingEntity playerEntity;
     private final LivingEntity opponentEntity;
-    private final BattleAttackData currentAttackData;
+    private EntityBattleConfig opponentConfig;  // Loaded from data
+    private String currentAttackId;  // Current attack being executed
 
     private TurnState currentState = TurnState.ACTION_SELECT;
     private int selectedActionIndex = 0; // 0: FIGHT, 1: ACT, 2: ITEM, 3: SHIELD
     private int selectedGridIndex = 0;   // WASD navigation for hotbar/ACT sub-menus
     private String currentDialogueText;
 
-    private final List<String> actList = List.of("Check", "Spare");
+    private List<String> actList = List.of("Check", "Spare");
 
     public enum TurnState {
         ACTION_SELECT,
@@ -38,14 +40,27 @@ public class DeltaruneBattleGui extends Screen {
         BATTLEBOX_PHASE
     }
 
-    public DeltaruneBattleGui(LivingEntity player, LivingEntity opponent, List<String> resources, BattleAttackData attackData) {
+    public DeltaruneBattleGui(LivingEntity player, LivingEntity opponent) {
         super(Component.translatable("gui.deltarunic_battle"));
         this.playerEntity = player;
         this.opponentEntity = opponent;
-        this.currentAttackData = attackData;
-        MobBattleResource mobResource = MobResourceManager.loadResourceForEntity(opponent);
         
-        this.currentDialogueText = MobResourceManager.getRandomDialogue(mobResource, true);
+        // Load the opponent's battle config from data
+        this.opponentConfig = EntityBattleConfigLoader.loadConfigForEntity(opponent);
+        
+        if (opponentConfig != null) {
+            // Set ACT list from config
+            this.actList = opponentConfig.pacificationMethods();
+            
+            // Set default attack
+            this.currentAttackId = opponentConfig.defaultAttack();
+            
+            // Get greeting dialogue
+            this.currentDialogueText = DialogueSelector.selectDialogue(opponentConfig, DialogueState.GREETING);
+        } else {
+            // Fallback if no config found
+            this.currentDialogueText = "* " + opponent.getDisplayName().getString() + " stands menacingly...";
+        }
     }
 
     @Override
@@ -98,7 +113,7 @@ public class DeltaruneBattleGui extends Screen {
             } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE) {
                 executeSelectedHotbarAction();
             }
-        } else if (selectedActionIndex == 1) { // ACT 2x4 Grid Navigation
+        } else if (selectedActionIndex == 1) { // ACT menu
             if (keyCode == GLFW.GLFW_KEY_W || keyCode == GLFW.GLFW_KEY_UP) {
                 selectedGridIndex = Math.max(0, selectedGridIndex - 1);
             } else if (keyCode == GLFW.GLFW_KEY_S || keyCode == GLFW.GLFW_KEY_DOWN) {
@@ -122,10 +137,12 @@ public class DeltaruneBattleGui extends Screen {
     }
 
     private void advanceTurnState() {
-        if (currentAttackData == null) {
+        if (opponentConfig == null || currentAttackId == null) {
             this.currentDialogueText = "* " + opponentEntity.getDisplayName().getString() + " has no attacks. :(";
             this.currentState = TurnState.ACTION_SELECT;
         } else {
+            // Get pre-attack dialogue from config
+            this.currentDialogueText = DialogueSelector.selectPreAttackDialogue(opponentConfig, currentAttackId);
             this.currentState = TurnState.BATTLEBOX_PHASE;
         }
     }
@@ -153,7 +170,7 @@ public class DeltaruneBattleGui extends Screen {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(0, 0, 100.0f);
 
-        if (currentState == TurnState.BATTLEBOX_PHASE && currentAttackData != null) {
+        if (currentState == TurnState.BATTLEBOX_PHASE && opponentConfig != null && opponentConfig.battlebox() != null) {
             renderBattlebox(guiGraphics);
         }
 
@@ -249,17 +266,25 @@ public class DeltaruneBattleGui extends Screen {
     }
 
     private void renderBattlebox(GuiGraphics guiGraphics) {
-        int boxWidth = currentAttackData.getBoxWidth();
-        int boxHeight = currentAttackData.getBoxHeight();
+        if (opponentConfig == null || opponentConfig.battlebox() == null) return;
+
+        var battlebox = opponentConfig.battlebox();
+        int boxWidth = battlebox.width();
+        int boxHeight = battlebox.height();
         int centeredBoxX = (this.width - boxWidth) / 2;
-        int boxY = currentAttackData.getBoxY();
+        int centeredBoxY = (this.height - boxHeight) / 2;
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(currentAttackData.getTranslationX(), currentAttackData.getTranslationY(), 0.0f);
-        guiGraphics.pose().scale(currentAttackData.getScaleX(), currentAttackData.getScaleY(), 1.0f);
+        guiGraphics.pose().translate(
+            centeredBoxX + battlebox.positionOffset().x,
+            centeredBoxY + battlebox.positionOffset().y,
+            0.0f
+        );
+        guiGraphics.pose().scale(battlebox.scale().x, battlebox.scale().y, 1.0f);
 
-        guiGraphics.fill(centeredBoxX, boxY, centeredBoxX + boxWidth, boxY + boxHeight, 0xFF000000);
-        guiGraphics.renderOutline(centeredBoxX, boxY, boxWidth, boxHeight, 0xFFFFFFFF);
+        // Render as black box with white outline (matches original)
+        guiGraphics.fill(0, 0, boxWidth, boxHeight, 0xFF000000);
+        guiGraphics.renderOutline(0, 0, boxWidth, boxHeight, 0xFFFFFFFF);
 
         guiGraphics.pose().popPose();
     }
