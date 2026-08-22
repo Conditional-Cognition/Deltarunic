@@ -1,7 +1,6 @@
 package com.cogworks.deltarunic.client.records;
 
 import com.cogworks.deltarunic.battle.data.EntityBattleConfig;
-import com.cogworks.deltarunic.battle.data.SpriteKeyframe;
 
 
 public class DialogueSelector {

@@ -31,6 +31,8 @@ public class DeltaruneBattleGui extends Screen {
     private int selectedGridIndex = 0;
     private String currentDialogueText;
 
+    private float battleboxTimeInSeconds = 0.0f;
+
     private List<String> actList = List.of("Check", "Spare");
 
     public enum TurnState {
@@ -132,7 +134,11 @@ public class DeltaruneBattleGui extends Screen {
     }
 
     private void executeActAction(String act) {
-        this.currentDialogueText = "* You performed " + act + "!";
+        if (opponentConfig != null) {
+            this.currentDialogueText = DialogueSelector.selectPacificationDialogue(opponentConfig, act);
+        } else {
+            this.currentDialogueText = "* You performed " + act + "!";
+        }
         this.currentState = TurnState.DIALOGUE_RESULT;
     }
 
@@ -141,9 +147,9 @@ public class DeltaruneBattleGui extends Screen {
             this.currentDialogueText = "* " + opponentEntity.getDisplayName().getString() + " has no attacks. :(";
             this.currentState = TurnState.ACTION_SELECT;
         } else {
-
             this.currentDialogueText = DialogueSelector.selectPreAttackDialogue(opponentConfig, currentAttackId);
             this.currentState = TurnState.BATTLEBOX_PHASE;
+            this.battleboxTimeInSeconds = 0.0f;
         }
     }
 
@@ -229,6 +235,14 @@ public class DeltaruneBattleGui extends Screen {
         }
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (currentState == TurnState.BATTLEBOX_PHASE) {
+            this.battleboxTimeInSeconds += 1.0f / 20.0f;
+        }
+    }
+
     private void renderDialogueArea(GuiGraphics guiGraphics, int startX, int subMenuY) {
         guiGraphics.drawString(this.font, currentDialogueText, startX + 10, subMenuY, 0xFFFFFFFF, false);
     }
@@ -276,15 +290,20 @@ public class DeltaruneBattleGui extends Screen {
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(
-            centeredBoxX + battlebox.positionOffset().x,
-            centeredBoxY + battlebox.positionOffset().y,
-            0.0f
+                centeredBoxX + battlebox.positionOffset().x,
+                centeredBoxY + battlebox.positionOffset().y,
+                0.0f
         );
         guiGraphics.pose().scale(battlebox.scale().x, battlebox.scale().y, 1.0f);
 
-
         guiGraphics.fill(0, 0, boxWidth, boxHeight, 0xFF000000);
         guiGraphics.renderOutline(0, 0, boxWidth, boxHeight, 0xFFFFFFFF);
+
+        String currentSprite = DialogueSelector.getSpriteAtTime(opponentConfig, currentAttackId, battleboxTimeInSeconds);
+
+        if (currentSprite != null) {
+            // TODO: Render the sprite texture here using guiGraphics
+        }
 
         guiGraphics.pose().popPose();
     }
