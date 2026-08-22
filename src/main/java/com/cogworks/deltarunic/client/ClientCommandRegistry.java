@@ -52,7 +52,8 @@ public class ClientCommandRegistry {
 
                             mc.execute(() -> mc.setScreen(new DeltaruneBattleGui(
                                     mc.player,
-                                    targetOpponent
+                                    targetOpponent,
+                                    attackData
                             )));
                             return 1;
                         })

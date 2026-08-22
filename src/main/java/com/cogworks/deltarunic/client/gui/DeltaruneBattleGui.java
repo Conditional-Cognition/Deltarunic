@@ -1,238 +1,107 @@
 package com.cogworks.deltarunic.client.gui;
 
+import com.cogworks.deltarunic.battle.BattleAttackData;
+import com.cogworks.deltarunic.battle.BattleDamageTracker;
+import com.cogworks.deltarunic.battle.animation.AttackObjectRenderer;
 import com.cogworks.deltarunic.battle.data.EntityBattleConfig;
 import com.cogworks.deltarunic.battle.data.EntityBattleConfigLoader;
-import com.cogworks.deltarunic.client.records.DialogueSelector;
-import com.cogworks.deltarunic.client.records.DialogueState;
+import com.cogworks.deltarunic.client.records.*;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
 public class DeltaruneBattleGui extends Screen {
-    private static final ResourceLocation HOTBAR_SPRITE = ResourceLocation.withDefaultNamespace("hud/hotbar");
-    private static final ResourceLocation HOTBAR_SELECTION_SPRITE = ResourceLocation.withDefaultNamespace("hud/hotbar_selection");
 
-    private final LivingEntity playerEntity;
-    private final LivingEntity opponentEntity;
-    private EntityBattleConfig opponentConfig;
-    private String currentAttackId;
-
-    private TurnState currentState = TurnState.ACTION_SELECT;
-    private int selectedActionIndex = 0;
-    private int selectedGridIndex = 0;
-    private String currentDialogueText;
-
-    private float battleboxTimeInSeconds = 0.0f;
-
-    private List<String> actList = List.of("Check", "Spare");
-
-    public enum TurnState {
-        ACTION_SELECT,
-        SUB_MENU,
-        DIALOGUE_RESULT,
+    private enum TurnState {
+        DIALOGUE_PHASE,
         BATTLEBOX_PHASE
     }
 
-    public DeltaruneBattleGui(LivingEntity player, LivingEntity opponent) {
-        super(Component.translatable("gui.deltarunic_battle"));
+    private final LivingEntity playerEntity;
+    private final LivingEntity opponentEntity;
+    private final BattleAttackData currentAttackData;
+    private final EntityBattleConfig opponentConfig;
+
+    private final MobBattleResource mobBattleResource;
+    private String currentAttackId = "";
+    private String currentDialogueText;
+    private TurnState currentState = TurnState.DIALOGUE_PHASE;
+    private final List<String> actList;
+    
+    private float battleboxTimeInSeconds = 0.0f;
+    private float soulX = 0.0f;
+    private float soulY = 0.0f;
+
+    private final BattleDamageTracker playerDamageTracker;
+    private final BattleDamageTracker opponentDamageTracker;
+
+    public DeltaruneBattleGui(LivingEntity player, LivingEntity opponent, BattleAttackData attackData) {
+        super(Component.literal("Deltarune Battle"));
         this.playerEntity = player;
         this.opponentEntity = opponent;
-        
+        this.currentAttackData = attackData;
 
-        this.opponentConfig = EntityBattleConfigLoader.loadConfigForEntity(opponent);
-        
+
+        String entityId = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(opponent.getType()).toString();
+        this.opponentConfig = EntityBattleConfigLoader.loadConfigByEntityId(entityId);
+        this.mobBattleResource = MobResourceManager.loadResourceForEntity(opponent);
+
+
+        this.playerDamageTracker = new BattleDamageTracker(player);
+        this.opponentDamageTracker = new BattleDamageTracker(opponent);
+
+
+
         if (opponentConfig != null) {
-
-            this.actList = opponentConfig.pacificationMethods();
-            
-
-            this.currentAttackId = opponentConfig.defaultAttack();
-            
-
+            actList = opponentConfig.pacificationMethods();
+            this.currentAttackId = opponentConfig.defaultAttack() != null ? opponentConfig.defaultAttack() : "";
             this.currentDialogueText = DialogueSelector.selectDialogue(opponentConfig, DialogueState.GREETING);
         } else {
-
+            actList = List.of("Check", "Spare");
             this.currentDialogueText = "* " + opponent.getDisplayName().getString() + " stands menacingly...";
         }
-    }
 
-    @Override
-    protected void init() {
-        super.init();
-
-        this.addRenderableWidget(
-            Button.builder(Component.literal("Exit"), b -> this.onClose())
-                .bounds(10, 10, 50, 20)
-                .build()
-        );
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (currentState == TurnState.ACTION_SELECT) {
-            if (keyCode == GLFW.GLFW_KEY_A || keyCode == GLFW.GLFW_KEY_LEFT) {
-                selectedActionIndex = (selectedActionIndex - 1 + 4) % 4;
-                return true;
-            } else if (keyCode == GLFW.GLFW_KEY_D || keyCode == GLFW.GLFW_KEY_RIGHT) {
-                selectedActionIndex = (selectedActionIndex + 1) % 4;
-                return true;
-            } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE) {
-                this.currentState = TurnState.SUB_MENU;
-                this.selectedGridIndex = 0;
-                return true;
-            }
-        } else if (currentState == TurnState.SUB_MENU) {
-            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-                this.currentState = TurnState.ACTION_SELECT;
-                return true;
-            }
-            handleSubMenuNavigation(keyCode);
-            return true;
-        } else if (currentState == TurnState.DIALOGUE_RESULT) {
-            if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE) {
-                advanceTurnState();
-                return true;
-            }
+        if (this.mobBattleResource != null) {
+            this.currentDialogueText = MobResourceManager.getRandomDialogue(this.mobBattleResource, false);
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+
+
+        resetSoulPosition();
     }
 
-    private void handleSubMenuNavigation(int keyCode) {
-        if (selectedActionIndex == 0 || selectedActionIndex == 2) {
-            if (keyCode == GLFW.GLFW_KEY_A || keyCode == GLFW.GLFW_KEY_LEFT) {
-                selectedGridIndex = (selectedGridIndex - 1 + 9) % 9;
-            } else if (keyCode == GLFW.GLFW_KEY_D || keyCode == GLFW.GLFW_KEY_RIGHT) {
-                selectedGridIndex = (selectedGridIndex + 1) % 9;
-            } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE) {
-                executeSelectedHotbarAction();
-            }
-        } else if (selectedActionIndex == 1) {
-            if (keyCode == GLFW.GLFW_KEY_W || keyCode == GLFW.GLFW_KEY_UP) {
-                selectedGridIndex = Math.max(0, selectedGridIndex - 1);
-            } else if (keyCode == GLFW.GLFW_KEY_S || keyCode == GLFW.GLFW_KEY_DOWN) {
-                selectedGridIndex = Math.min(actList.size() - 1, selectedGridIndex + 1);
-            } else if (keyCode == GLFW.GLFW_KEY_A || keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_D || keyCode == GLFW.GLFW_KEY_RIGHT) {
-                selectedGridIndex = (selectedGridIndex ^ 4) < actList.size() ? (selectedGridIndex ^ 4) : selectedGridIndex;
-            } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE) {
-                executeActAction(actList.get(selectedGridIndex));
-            }
+    private void resetSoulPosition() {
+        int boxWidth = 200;
+        int boxHeight = 150;
+
+        if (opponentConfig != null && opponentConfig.battlebox() != null) {
+            boxWidth = opponentConfig.battlebox().width();
+            boxHeight = opponentConfig.battlebox().height();
+        } else if (currentAttackData != null) {
+            boxWidth = currentAttackData.getBoxWidth();
+            boxHeight = currentAttackData.getBoxHeight();
         }
-    }
 
-    private void executeSelectedHotbarAction() {
-        this.currentDialogueText = "* Used item slot " + (selectedGridIndex + 1) + ".";
-        this.currentState = TurnState.DIALOGUE_RESULT;
-    }
-
-    private void executeActAction(String act) {
-        if (opponentConfig != null) {
-            this.currentDialogueText = DialogueSelector.selectPacificationDialogue(opponentConfig, act);
-        } else {
-            this.currentDialogueText = "* You performed " + act + "!";
-        }
-        this.currentState = TurnState.DIALOGUE_RESULT;
+        this.soulX = (boxWidth / 2.0f) - 4.0f;
+        this.soulY = (boxHeight / 2.0f) - 4.0f;
     }
 
     private void advanceTurnState() {
-        if (opponentConfig == null || currentAttackId == null) {
-            this.currentDialogueText = "* " + opponentEntity.getDisplayName().getString() + " has no attacks. :(";
-            this.currentState = TurnState.ACTION_SELECT;
-        } else {
+        if (this.mobBattleResource != null) {
+            this.currentDialogueText = MobResourceManager.getRandomDialogue(this.mobBattleResource, false);
+        } else if (opponentConfig != null && currentAttackId != null) {
             this.currentDialogueText = DialogueSelector.selectPreAttackDialogue(opponentConfig, currentAttackId);
-            this.currentState = TurnState.BATTLEBOX_PHASE;
-            this.battleboxTimeInSeconds = 0.0f;
-        }
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (currentState == TurnState.DIALOGUE_RESULT) {
-            advanceTurnState();
-            return true;
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean shouldCloseOnEsc() { return false; }
-
-    @Override
-    public boolean isPauseScreen() { return false; }
-
-    @Override
-    public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {}
-
-    @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, 100.0f);
-
-        if (currentState == TurnState.BATTLEBOX_PHASE && opponentConfig != null && opponentConfig.battlebox() != null) {
-            renderBattlebox(guiGraphics);
-        }
-
-        renderStatusBox(guiGraphics);
-
-        int startX = (this.width - 240) / 2;
-        int menuY = this.height - 80;
-
-        renderActionButtons(guiGraphics, startX, menuY);
-
-        if (currentState == TurnState.SUB_MENU) {
-            if (selectedActionIndex == 0 || selectedActionIndex == 2) {
-                renderNativeHotbar(guiGraphics, startX, this.height - 55);
-            } else if (selectedActionIndex == 1) {
-                renderActGrid(guiGraphics, startX, this.height - 55);
-            }
         } else {
-            renderDialogueArea(guiGraphics, startX, this.height - 50);
+            this.currentDialogueText = "* " + opponentEntity.getDisplayName().getString() + " prepares an attack.";
         }
-
-        guiGraphics.pose().popPose();
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
-    }
-
-    private void renderNativeHotbar(GuiGraphics guiGraphics, int startX, int y) {
-        if (!(playerEntity instanceof Player player)) return;
-
-
-        guiGraphics.blitSprite(HOTBAR_SPRITE, startX + 28, y, 182, 22);
-
-
-        int selectorX = startX + 28 - 1 + (selectedGridIndex * 20);
-        guiGraphics.blitSprite(HOTBAR_SELECTION_SPRITE, selectorX, y - 1, 24, 23);
-
-
-        for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().items.get(i);
-            if (!stack.isEmpty()) {
-                int itemX = startX + 28 + 3 + (i * 20);
-                guiGraphics.renderItem(stack, itemX, y + 3);
-                guiGraphics.renderItemDecorations(this.font, stack, itemX, y + 3);
-            }
-        }
-    }
-
-    private void renderActGrid(GuiGraphics guiGraphics, int startX, int subMenuY) {
-        for (int i = 0; i < actList.size(); i++) {
-            int col = i / 4;
-            int row = i % 4;
-            int x = startX + (col * 110);
-            int y = subMenuY + (row * 12);
-
-            String prefix = (i == selectedGridIndex) ? "❤ " : "  ";
-            int color = (i == selectedGridIndex) ? 0xFFFF5555 : 0xFFFFFFFF;
-            guiGraphics.drawString(this.font, prefix + actList.get(i), x, y, color, false);
-        }
+        
+        this.currentState = TurnState.BATTLEBOX_PHASE;
+        this.battleboxTimeInSeconds = 0.0f;
+        resetSoulPosition();
     }
 
     @Override
@@ -240,71 +109,162 @@ public class DeltaruneBattleGui extends Screen {
         super.tick();
         if (currentState == TurnState.BATTLEBOX_PHASE) {
             this.battleboxTimeInSeconds += 1.0f / 20.0f;
+
+
+            if (opponentConfig != null && currentAttackId != null && !currentAttackId.isEmpty()) {
+                float incomingDamage = AttackObjectRenderer.checkCollisionWithAttacks(
+                        opponentConfig,
+                        currentAttackId,
+                        battleboxTimeInSeconds,
+                        soulX,
+                        soulY,
+                        8.0f,
+                        8.0f
+                );
+                
+                if (incomingDamage > 0.0f) {
+                    playerDamageTracker.addDamage(incomingDamage);
+                }
+            }
         }
     }
 
-    private void renderDialogueArea(GuiGraphics guiGraphics, int startX, int subMenuY) {
-        guiGraphics.drawString(this.font, currentDialogueText, startX + 10, subMenuY, 0xFFFFFFFF, false);
-    }
+    @Override
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        
 
-    private void renderActionButtons(GuiGraphics guiGraphics, int startX, int menuY) {
-        String[] labels = {"⚔", "✦", "💼", "🛡"};
-        for (int i = 0; i < 4; i++) {
-            int x = startX + (i * 60);
-            int color = (i == selectedActionIndex) ? 0xFFFFFF00 : 0xFF888888;
-            guiGraphics.fill(x, menuY, x + 55, menuY + 20, 0xFF000000);
-            guiGraphics.renderOutline(x, menuY, 55, 20, color);
-            guiGraphics.drawString(this.font, labels[i], x + 5, menuY + 6, color, false);
+        renderBattlebox(guiGraphics);
+
+
+        ItemStack opponentIcon = EntityIconResolver.getEntityIcon(opponentEntity);
+        guiGraphics.renderItem(opponentIcon, 20, 20);
+        guiGraphics.drawString(this.font, opponentEntity.getDisplayName().getString() + "  HP: " + (int) opponentDamageTracker.getCurrentBattleHp(), 45, 24, 0xFFFFFF);
+
+
+        ItemStack playerIcon = EntityIconResolver.getEntityIcon(playerEntity);
+        guiGraphics.renderItem(playerIcon, 20, this.height - 40);
+        guiGraphics.drawString(this.font, "HP: " + (int) playerDamageTracker.getCurrentBattleHp() + " / " + (int) playerDamageTracker.getMaxHp(), 45, this.height - 36, 0xFFFFFF);
+
+
+        guiGraphics.drawString(this.font, currentDialogueText, 30, this.height - 80, 0xFFFFFF);
+
+
+
+        if (currentState == TurnState.DIALOGUE_PHASE) {
+            int actStartX = this.width - 120;
+            int actStartY = this.height - 80;
+
+            guiGraphics.drawString(this.font, "Available ACTs:", actStartX, actStartY - 14, 0xFFFFAA00);
+            for (int i = 0; i < actList.size(); i++) {
+                guiGraphics.drawString(this.font, "* " + actList.get(i), actStartX, actStartY + (i * 12), 0xFFFFFF);
+            }
         }
-    }
 
-    private void renderStatusBox(GuiGraphics guiGraphics) {
-        int menuWidth = 240;
-        int startX = (this.width - menuWidth) / 2;
-        int statusY = this.height - 105;
+        if (currentState == TurnState.BATTLEBOX_PHASE) {
+            float turnDamage = playerDamageTracker.getAccumulatedDamageThisTurn();
+            if (turnDamage > 0) {
 
-        guiGraphics.fill(startX, statusY, startX + menuWidth, statusY + 22, 0xFF000000);
-        guiGraphics.renderOutline(startX, statusY, menuWidth, 22, 0xFF00FFFF);
+                guiGraphics.drawString(this.font, "Damage: " + (int) turnDamage, (this.width / 2) - 30, (this.height / 2) - 90, 0xFFFF5555);
+            }
+        }
 
-        String playerName = playerEntity != null ? playerEntity.getName().getString() : "Player";
-        String initial = playerName.isEmpty() ? "P" : playerName.substring(0, 1).toUpperCase();
-
-        float maxHp = playerEntity != null ? playerEntity.getMaxHealth() : 20.0f;
-        float currentHp = playerEntity != null ? playerEntity.getHealth() : 20.0f;
-        int hpPercent = (int) ((currentHp / maxHp) * 100);
-
-        Component betweenText = Component.translatable("gui.deltarunic_battle.username_health_between");
-        Component statusComponent = Component.literal(initial).append(betweenText).append(hpPercent + "%");
-
-        guiGraphics.drawString(this.font, statusComponent, startX + 10, statusY + 7, 0xFFFFFFFF, false);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     private void renderBattlebox(GuiGraphics guiGraphics) {
-        if (opponentConfig == null || opponentConfig.battlebox() == null) return;
+        int boxWidth = 200;
+        int boxHeight = 150;
+        float offsetX = 0.0f;
+        float offsetY = 0.0f;
+        float scaleX = 1.0f;
+        float scaleY = 1.0f;
 
-        var battlebox = opponentConfig.battlebox();
-        int boxWidth = battlebox.width();
-        int boxHeight = battlebox.height();
+        if (opponentConfig != null && opponentConfig.battlebox() != null) {
+            var battlebox = opponentConfig.battlebox();
+            boxWidth = battlebox.width();
+            boxHeight = battlebox.height();
+            offsetX = battlebox.positionOffset().x;
+            offsetY = battlebox.positionOffset().y;
+            scaleX = battlebox.scale().x;
+            scaleY = battlebox.scale().y;
+        } else if (currentAttackData != null) {
+            boxWidth = currentAttackData.getBoxWidth();
+            boxHeight = currentAttackData.getBoxHeight();
+            offsetX = currentAttackData.getTranslationX();
+            offsetY = currentAttackData.getTranslationY();
+            scaleX = currentAttackData.getScaleX();
+            scaleY = currentAttackData.getScaleY();
+        }
+
         int centeredBoxX = (this.width - boxWidth) / 2;
         int centeredBoxY = (this.height - boxHeight) / 2;
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(
-                centeredBoxX + battlebox.positionOffset().x,
-                centeredBoxY + battlebox.positionOffset().y,
-                0.0f
-        );
-        guiGraphics.pose().scale(battlebox.scale().x, battlebox.scale().y, 1.0f);
+        guiGraphics.pose().translate(centeredBoxX + offsetX, centeredBoxY + offsetY, 0.0f);
+        guiGraphics.pose().scale(scaleX, scaleY, 1.0f);
+
 
         guiGraphics.fill(0, 0, boxWidth, boxHeight, 0xFF000000);
         guiGraphics.renderOutline(0, 0, boxWidth, boxHeight, 0xFFFFFFFF);
 
-        String currentSprite = DialogueSelector.getSpriteAtTime(opponentConfig, currentAttackId, battleboxTimeInSeconds);
 
-        if (currentSprite != null) {
-            // TODO: Render the sprite texture here using guiGraphics
+        if (currentAttackId != null && !currentAttackId.isEmpty()) {
+            AttackObjectRenderer.renderAttackObjects(
+                guiGraphics,
+                opponentConfig,
+                currentAttackId,
+                battleboxTimeInSeconds
+            );
+        }
+
+
+        if (currentState == TurnState.BATTLEBOX_PHASE) {
+            guiGraphics.fill((int) soulX, (int) soulY, (int) soulX + 8, (int) soulY + 8, 0xFFFF0000);
         }
 
         guiGraphics.pose().popPose();
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+
+        if (keyCode == 72) {
+            playerDamageTracker.heal(10.0f);
+            return true;
+        }
+
+
+        if (keyCode == 257 || keyCode == 32) {
+
+            if (playerDamageTracker.isDefeated() || opponentDamageTracker.isDefeated()) {
+                this.onClose();
+                return true;
+            }
+
+            if (currentState == TurnState.DIALOGUE_PHASE) {
+                advanceTurnState();
+            } else {
+                currentState = TurnState.DIALOGUE_PHASE;
+
+                playerDamageTracker.resetTurnDamage();
+                opponentDamageTracker.resetTurnDamage();
+            }
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public void onClose() {
+
+        playerDamageTracker.applyFinalDamageToEntity();
+        opponentDamageTracker.applyFinalDamageToEntity();
+        super.onClose();
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 }
