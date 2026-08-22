@@ -12,17 +12,14 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-
 public class EntityBattleConfigLoader {
     private static final Gson GSON = new Gson();
 
-    
     public static EntityBattleConfig loadConfigForEntity(LivingEntity entity) {
         ResourceLocation entityTypeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         if (entityTypeId == null) {
             return null;
         }
-
 
         ResourceLocation configPath = ResourceLocation.fromNamespaceAndPath(
             entityTypeId.getNamespace(),
@@ -39,7 +36,6 @@ public class EntityBattleConfigLoader {
         return null;
     }
 
-    
     public static EntityBattleConfig loadConfigByEntityId(String entityId) {
         ResourceLocation configPath = ResourceLocation.tryParse(entityId + "/resources.json");
         if (configPath == null) {

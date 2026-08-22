@@ -8,5 +8,4 @@ public class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
             DeferredRegister.create(Registries.ENTITY_TYPE, com.cogworks.deltarunic.Deltarunic.MODID);
 
-
 }

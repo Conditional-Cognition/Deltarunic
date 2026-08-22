@@ -2,11 +2,9 @@ package com.cogworks.deltarunic.client.records;
 
 import com.cogworks.deltarunic.battle.data.EntityBattleConfig;
 
-
 public class DialogueSelector {
     private static final String DEFAULT_DIALOGUE = "stands menacingly.";
 
-    
     public static String selectDialogue(EntityBattleConfig config, DialogueState state) {
         if (config == null || config.defaultDialogues() == null) {
             return DEFAULT_DIALOGUE;
@@ -19,11 +17,9 @@ public class DialogueSelector {
             return dialogue;
         }
 
-
         return config.defaultDialogues().getOrDefault("default", DEFAULT_DIALOGUE);
     }
 
-    
     public static String selectPreAttackDialogue(EntityBattleConfig config, String attackId) {
         if (config == null || config.attacks() == null) {
             return DEFAULT_DIALOGUE;
@@ -36,12 +32,10 @@ public class DialogueSelector {
                 .orElse(selectDialogue(config, DialogueState.PRE_ATTACK));
     }
 
-    
     public static String selectPacificationDialogue(EntityBattleConfig config, String pacificationMethod) {
         if (config == null || config.attacks() == null) {
             return DEFAULT_DIALOGUE;
         }
-
 
         return config.attacks().stream()
                 .flatMap(attack -> attack.pacificationDialogue().entrySet().stream())
@@ -51,7 +45,6 @@ public class DialogueSelector {
                 .orElse(selectDialogue(config, DialogueState.PACIFIED));
     }
 
-    
     public static String getSpriteAtTime(EntityBattleConfig config, String attackId, float timeInSeconds) {
         if (config == null || config.attacks() == null) {
             return null;

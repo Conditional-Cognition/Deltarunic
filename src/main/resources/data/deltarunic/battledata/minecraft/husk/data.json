@@ -1,0 +1,81 @@
+{
+  "battlebox": {
+    "width": 150,
+    "height": 150,
+    "positionOffset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+    "scale": { "x": 1.0, "y": 1.0, "z": 1.0 }
+  },
+  "defaultAttack": "sand_drop",
+  "pacificationMethods": [ "Check", "Brush", "Spare" ],
+  "attacks": [
+    {
+      "id": "sand_drop",
+      "attackObjects": [
+        {
+          "damage": 6.0,
+          "collisionActivateTime": 0.0,
+          "collisionDeactivateTime": 2.0,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 20.0, "y": -20.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "minecraft:textures/block/sand.png" },
+            { "timeInSeconds": 2.0, "position": { "x": 20.0, "y": 134.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "minecraft:textures/block/sand.png" }
+          ]
+        },
+        {
+          "damage": 6.0,
+          "collisionActivateTime": 0.2,
+          "collisionDeactivateTime": 2.2,
+          "animationPath": [
+            { "timeInSeconds": 0.2, "position": { "x": 56.0, "y": -20.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "minecraft:textures/block/sand.png" },
+            { "timeInSeconds": 2.2, "position": { "x": 56.0, "y": 134.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "minecraft:textures/block/sand.png" }
+          ]
+        },
+        {
+          "damage": 6.0,
+          "collisionActivateTime": 0.4,
+          "collisionDeactivateTime": 2.4,
+          "animationPath": [
+            { "timeInSeconds": 0.4, "position": { "x": 92.0, "y": -20.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "minecraft:textures/block/sand.png" },
+            { "timeInSeconds": 2.4, "position": { "x": 92.0, "y": 134.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "minecraft:textures/block/sand.png" }
+          ]
+        },
+        {
+          "damage": 6.0,
+          "collisionActivateTime": 0.0,
+          "collisionDeactivateTime": 2.0,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 20.0, "y": -20.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "deltarunic:textures/sprites/husk_sand.png" },
+            { "timeInSeconds": 2.0, "position": { "x": 20.0, "y": 134.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "deltarunic:textures/sprites/husk_sand.png" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rotten_throw",
+      "attackObjects": [
+        {
+          "damage": 5.0,
+          "collisionActivateTime": 0.0,
+          "collisionDeactivateTime": 2.5,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 170.0, "y": 75.0, "z": 0.0 }, "size": { "x": 16.0, "y": 16.0, "z": 0.0 }, "rotation": 0.0, "sprite": "minecraft:textures/item/rotten_flesh.png" },
+            { "timeInSeconds": 2.5, "position": { "x": -20.0, "y": 75.0, "z": 0.0 }, "size": { "x": 16.0, "y": 16.0, "z": 0.0 }, "rotation": 6.283, "sprite": "minecraft:textures/item/rotten_flesh.png" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bone_drop",
+      "attackObjects": [
+        {
+          "damage": 4.0,
+          "collisionActivateTime": 0.5,
+          "collisionDeactivateTime": 3.0,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 30.0, "y": -20.0, "z": 0.0 }, "size": { "x": 16.0, "y": 16.0, "z": 0.0 }, "rotation": 0.785, "sprite": "minecraft:textures/item/bone.png" },
+            { "timeInSeconds": 3.0, "position": { "x": 30.0, "y": 170.0, "z": 0.0 }, "size": { "x": 16.0, "y": 16.0, "z": 0.0 }, "rotation": 0.785, "sprite": "minecraft:textures/item/bone.png" }
+          ]
+        }
+      ]
+    }
+  ]
+}

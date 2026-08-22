@@ -1,0 +1,51 @@
+{
+  "battlebox": {
+    "width": 200,
+    "height": 150,
+    "positionOffset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+    "scale": { "x": 1.0, "y": 1.0, "z": 1.0 }
+  },
+  "defaultAttack": "arrow_strike",
+  "pacificationMethods": [ "Check", "Disarm", "Spare" ],
+  "attacks": [
+    {
+      "id": "bone_drop",
+      "attackObjects": [
+        {
+          "damage": 4.0,
+          "collisionActivateTime": 0.5,
+          "collisionDeactivateTime": 3.0,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 60.0, "y": -20.0, "z": 0.0 }, "size": { "x": 16.0, "y": 16.0, "z": 0.0 }, "rotation": 0.785, "sprite": "minecraft:textures/item/bone.png" },
+            { "timeInSeconds": 3.0, "position": { "x": 60.0, "y": 170.0, "z": 0.0 }, "size": { "x": 16.0, "y": 16.0, "z": 0.0 }, "rotation": 0.785, "sprite": "minecraft:textures/item/bone.png" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "arrow_strike",
+      "attackObjects": [
+        {
+          "damage": 0.0,
+          "collisionActivateTime": 99.0,
+          "collisionDeactivateTime": 99.0,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 100.0, "y": 20.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 1.57, "sprite": "deltarunic:textures/sprites/skeleton_bow.png" },
+            { "timeInSeconds": 1.2, "position": { "x": 100.0, "y": 20.0, "z": 0.0 }, "size": { "x": 32.0, "y": 32.0, "z": 0.0 }, "rotation": 1.57, "sprite": "deltarunic:textures/sprites/skeleton_bow.png" }
+          ]
+        },
+        {
+          "damage": 8.0,
+          "collisionActivateTime": 0.0,
+          "collisionDeactivateTime": 2.0,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 100.0, "y": -40.0, "z": 0.0 }, "size": { "x": 12.0, "y": 32.0, "z": 0.0 }, "rotation": 1.57, "sprite": "deltarunic:textures/sprites/skeleton_arrow.png" },
+            { "timeInSeconds": 0.5, "position": { "x": 100.0, "y": 20.0, "z": 0.0 }, "size": { "x": 12.0, "y": 32.0, "z": 0.0 }, "rotation": 1.57, "sprite": "deltarunic:textures/sprites/skeleton_arrow.png" },
+            { "timeInSeconds": 1.0, "position": { "x": 100.0, "y": 20.0, "z": 0.0 }, "size": { "x": 12.0, "y": 32.0, "z": 0.0 }, "rotation": 1.57, "sprite": "deltarunic:textures/sprites/skeleton_arrow.png" },
+            { "timeInSeconds": 1.2, "position": { "x": 100.0, "y": 170.0, "z": 0.0 }, "size": { "x": 12.0, "y": 32.0, "z": 0.0 }, "rotation": 1.57, "sprite": "deltarunic:textures/sprites/skeleton_arrow.png" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,40 @@
 {
-  "in_game_editor": "planned or some shit"
+  "battlebox": {
+    "width": 200,
+    "height": 150,
+    "positionOffset": { "x": 0.0, "y": 0.0, "z": 0.0 },
+    "scale": { "x": 1.0, "y": 1.0, "z": 1.0 }
+  },
+  "defaultAttack": "rotten_throw",
+  "pacificationMethods": [ "Check", "Spare" ],
+  "attacks": [
+    {
+      "id": "rotten_throw",
+      "attackObjects": [
+        {
+          "damage": 5.0,
+          "collisionActivateTime": 0.0,
+          "collisionDeactivateTime": 2.5,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 220.0, "y": 75.0, "z": 0.0 }, "size": { "x": 24.0, "y": 24.0, "z": 0.0 }, "rotation": 0.0, "sprite": "deltarunic:textures/sprites/zombie_flesh.png" },
+            { "timeInSeconds": 2.5, "position": { "x": -20.0, "y": 75.0, "z": 0.0 }, "size": { "x": 24.0, "y": 24.0, "z": 0.0 }, "rotation": 6.283, "sprite": "deltarunic:textures/sprites/zombie_flesh.png" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bone_drop",
+      "attackObjects": [
+        {
+          "damage": 4.0,
+          "collisionActivateTime": 0.5,
+          "collisionDeactivateTime": 3.0,
+          "animationPath": [
+            { "timeInSeconds": 0.0, "position": { "x": 60.0, "y": -20.0, "z": 0.0 }, "size": { "x": 16.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "deltarunic:textures/sprites/zombie_bone.png" },
+            { "timeInSeconds": 3.0, "position": { "x": 60.0, "y": 170.0, "z": 0.0 }, "size": { "x": 16.0, "y": 32.0, "z": 0.0 }, "rotation": 0.0, "sprite": "deltarunic:textures/sprites/zombie_bone.png" }
+          ]
+        }
+      ]
+    }
+  ]
 }

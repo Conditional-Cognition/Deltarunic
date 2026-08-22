@@ -1,0 +1,21 @@
+{
+  "entityId": "minecraft:skeleton",
+  "randomDialogues": [
+    "The skeleton stumbles towards you.",
+    "The skeleton's presence sends shivers down your back."
+  ],
+  "preAttackDialogues": {
+    "rotten_throw": "* The husk hurls something vile!",
+    "bone_drop": "* Loose bones fall from above!"
+  },
+  "pacificationDialogues": {
+    "Check": "* You check the skeleton. It seems... lifeless.",
+    "Spare": "* The skeleton falls still."
+  },
+  "stateDialogues": {
+    "greeting": "* A skeleton stumbles towards you.",
+    "pacified": "* The skeleton stops moving...",
+    "defeated": "* Ligaments crumble...",
+    "hurt": "* The skeleton recoils!"
+  }
+}

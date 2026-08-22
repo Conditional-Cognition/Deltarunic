@@ -43,7 +43,6 @@ public class BattleDamageTracker {
         this.accumulatedDamageThisTurn = 0.0f;
     }
 
-    
     public void applyFinalDamageToEntity() {
         entity.setHealth(currentBattleHp);
         if (currentBattleHp <= 0.0f) {

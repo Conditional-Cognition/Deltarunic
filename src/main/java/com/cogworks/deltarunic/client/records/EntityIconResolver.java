@@ -14,7 +14,6 @@ public class EntityIconResolver {
         ResourceLocation entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         String path = entityId.getPath();
 
-
         Item skullItem = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("minecraft", path + "_head"));
         if (skullItem != Items.AIR) {
             return new ItemStack(skullItem);
@@ -23,19 +22,16 @@ public class EntityIconResolver {
             return new ItemStack(Items.PLAYER_HEAD);
         }
 
-
         Item spawnEgg = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("minecraft", path + "_spawn_egg"));
         if (spawnEgg != Items.AIR) {
             return new ItemStack(spawnEgg);
         }
-
 
         for (Item item : BuiltInRegistries.ITEM) {
             if (BuiltInRegistries.ITEM.getKey(item).getPath().contains(path)) {
                 return new ItemStack(item);
             }
         }
-
 
         return new ItemStack(Items.GRASS_BLOCK);
     }

@@ -1,134 +1,21 @@
 {
   "entityId": "minecraft:zombie",
-  "battlebox": {
-    "id": "zombie_dodge",
-    "width": 80,
-    "height": 100,
-    "positionOffset": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "rotationYaw": 0,
-    "rotationPitch": 0,
-    "scale": {
-      "x": 1.0,
-      "y": 1.0,
-      "z": 1.0
-    },
-    "shapeType": "rectangle"
-  },
-  "attacks": [
-    {
-      "id": "zombie_lunge",
-      "preAttackDialogue": "* The zombie lunges!",
-      "attackObjects": [
-        {
-          "objectId": "zombie_fist",
-          "startPosition": {
-            "x": 200,
-            "y": 150,
-            "z": 0
-          },
-          "startSize": {
-            "x": 40,
-            "y": 40,
-            "z": 1
-          },
-          "damage": 5.0,
-          "sprite": "deltarunic:sprites/zombie_fist",
-          "collisionActivateTime": 0.2,
-          "collisionDeactivateTime": 0.6,
-          "animationPath": [
-            {
-              "timeInSeconds": 0.0,
-              "position": {
-                "x": 200,
-                "y": 150,
-                "z": 0
-              },
-              "size": {
-                "x": 40,
-                "y": 40,
-                "z": 1
-              },
-              "rotation": 0.0,
-              "sprite": "deltarunic:sprites/zombie_fist"
-            },
-            {
-              "timeInSeconds": 0.3,
-              "position": {
-                "x": 100,
-                "y": 130,
-                "z": 0
-              },
-              "size": {
-                "x": 50,
-                "y": 50,
-                "z": 1
-              },
-              "rotation": 0.0,
-              "sprite": "deltarunic:sprites/zombie_fist"
-            },
-            {
-              "timeInSeconds": 0.8,
-              "position": {
-                "x": 200,
-                "y": 150,
-                "z": 0
-              },
-              "size": {
-                "x": 40,
-                "y": 40,
-                "z": 1
-              },
-              "rotation": 0.0,
-              "sprite": "deltarunic:sprites/zombie_fist"
-            }
-          ]
-        }
-      ],
-      "spriteAnimation": [
-        {
-          "timeInSeconds": 0.0,
-          "sprite": "deltarunic:sprites/zombie1"
-        },
-        {
-          "timeInSeconds": 0.2,
-          "sprite": "deltarunic:sprites/zombie_swing"
-        },
-        {
-          "timeInSeconds": 0.6,
-          "sprite": "deltarunic:sprites/zombie_swung"
-        },
-        {
-          "timeInSeconds": 0.9,
-          "sprite": "deltarunic:sprites/zombie1"
-        }
-      ],
-      "totalAnimationDuration": 1.0,
-      "playerReactionTime": 0.2,
-      "pacificationDialogue": {
-        "Check": "* You check the zombie. It seems... lifeless.",
-        "Spare": "* The zombie's eyes close. It falls still."
-      },
-      "vulnerableToMethods": [
-        "Check",
-        "Spare"
-      ]
-    }
+  "randomDialogues": [
+    "A rotten figure stumbles towards you.",
+    "A rotten figure groans before you."
   ],
-  "defaultDialogues": {
-    "greeting": "A rotten figure stumbles towards you.",
-    "pre_attack": "A rotten figure groans before you.",
-    "pacified": "The zombie stops moving...",
-    "defeated": "...",
-    "hurt": "The zombie recoils!"
+  "preAttackDialogues": {
+    "rotten_throw": "* The zombie hurls something vile!",
+    "bone_drop": "* Loose bones fall from above!"
   },
-  "pacificationMethods": [
-    "Check",
-    "Spare"
-  ],
-  "defaultAttack": "zombie_lunge",
-  "canBePacified": true
+  "pacificationDialogues": {
+    "Check": "* You check the zombie. It seems... lifeless.",
+    "Spare": "* The zombie's eyes close. It falls still."
+  },
+  "stateDialogues": {
+    "greeting": "* A rotten figure stumbles towards you.",
+    "pacified": "* The zombie stops moving...",
+    "defeated": "* Rotten Flesh tears apart, and off something...",
+    "hurt": "* The zombie recoils!"
+  }
 }

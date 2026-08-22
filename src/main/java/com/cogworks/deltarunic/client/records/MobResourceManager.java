@@ -19,7 +19,6 @@ public class MobResourceManager {
 
     public static MobBattleResource loadResourceForEntity(LivingEntity entity) {
         ResourceLocation entityTypeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-        
 
         ResourceLocation configPath = ResourceLocation.fromNamespaceAndPath(
             entityTypeId.getNamespace(),

@@ -67,7 +67,6 @@ public class TimelineInterpolator {
             return null;
         }
 
-
         AnimationKeyframe activeFrame = keyframes.getFirst();
         for (AnimationKeyframe frame : keyframes) {
             if (frame.timeInSeconds() <= time) {

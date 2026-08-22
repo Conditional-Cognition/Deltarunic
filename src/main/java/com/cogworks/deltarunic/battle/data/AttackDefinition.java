@@ -3,7 +3,6 @@ package com.cogworks.deltarunic.battle.data;
 import java.util.List;
 import java.util.Map;
 
-
 public record AttackDefinition(
     String id,
     String preAttackDialogue,

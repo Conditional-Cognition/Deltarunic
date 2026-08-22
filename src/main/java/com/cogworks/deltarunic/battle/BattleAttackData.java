@@ -1,36 +1,22 @@
 package com.cogworks.deltarunic.battle;
 
 public class BattleAttackData {
-    private final int boxX;
-    private final int boxY;
     private final int boxWidth;
     private final int boxHeight;
-    private final float scaleX;
-    private final float scaleY;
-    private final float translationX;
-    private final float translationY;
-    private final boolean hasSpriteChanges;
-    private final String spritePath;
+    private final String boxTransformType;
+    private final float boxTransformStartTime;
+    private final float boxTransformSpeed;
 
-    public BattleAttackData(int boxX, int boxY, int boxWidth, int boxHeight, float scaleX, float scaleY, float translationX, float translationY, boolean hasSpriteChanges, String spritePath) {
-        this.boxX = boxX;
-        this.boxY = boxY;
+    public BattleAttackData(int boxWidth, int boxHeight, String boxTransformType, float boxTransformStartTime, float boxTransformSpeed) {
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-        this.translationX = translationX;
-        this.translationY = translationY;
-        this.hasSpriteChanges = hasSpriteChanges;
-        this.spritePath = spritePath;
+        this.boxTransformType = boxTransformType != null ? boxTransformType : "";
+        this.boxTransformStartTime = boxTransformStartTime;
+        this.boxTransformSpeed = boxTransformSpeed;
     }
 
-    public int getBoxX() {
-        return boxX;
-    }
-
-    public int getBoxY() {
-        return boxY;
+    public BattleAttackData(int boxWidth, int boxHeight) {
+        this(boxWidth, boxHeight, "", 0.0f, 0.0f);
     }
 
     public int getBoxWidth() {
@@ -41,27 +27,15 @@ public class BattleAttackData {
         return boxHeight;
     }
 
-    public float getScaleX() {
-        return scaleX;
+    public String getBoxTransformType() {
+        return boxTransformType;
     }
 
-    public float getScaleY() {
-        return scaleY;
+    public float getBoxTransformStartTime() {
+        return boxTransformStartTime;
     }
 
-    public float getTranslationX() {
-        return translationX;
-    }
-
-    public float getTranslationY() {
-        return translationY;
-    }
-
-    public boolean hasSpriteChanges() {
-        return hasSpriteChanges;
-    }
-
-    public String getSpritePath() {
-        return spritePath;
+    public float getBoxTransformSpeed() {
+        return boxTransformSpeed;
     }
 }
