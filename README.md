@@ -1,25 +1,18 @@
+# Deltarunic
+Deltarune's iconic battle-box combat system, now brought to you by the worst person to try this already.
 
-Installation information
-=======
-
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
-
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
-
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
-
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
-
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+---
+## Features
+* **Offhand Combat Trigger:** Holding a designated item in your offhand intercepts incoming damage (`LivingIncomingDamageEvent`), cancels it, shoves the attacker 7 blocks away, and forces a combat session.
+* **TPA-Style Challenges:** Send duel invites with a 30-second expiry timer and raycasted Line-of-Sight validation between eye positions. Generates clickable chat prompt strings (`[ACCEPT]`) linked to execution commands.
+---
+## Commands
+* `/deltarunic testbbox [@e[limit=1]]` - Force-opens the battle GUI against yourself, your crosshair, or a targeted selector (enforces a 30-block distance limit).
+* `/deltarunic accept <uuid>` - Accepts a pending combat invitation.
+---
+## Technical Details
+* Built for `NeoForge 21.1.248`, orignially.
+* Written with code that is held together with duct tape.
+---
+## CREDITS:
+* Made by `Conditional_Cognition`(GitHub) AKA `Cndtnl_Cognition`(Minecraft) in his free time. For fun. Even though it was not fun to make.
