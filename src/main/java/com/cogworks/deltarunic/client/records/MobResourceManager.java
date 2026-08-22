@@ -18,9 +18,9 @@ public class MobResourceManager {
     private static final Gson GSON = new Gson();
 
     public static MobBattleResource loadResourceForEntity(LivingEntity entity) {
-        ResourceLocation entityTypeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()); // e.g. "minecraft:zombie"
+        ResourceLocation entityTypeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         
-        // Path resolves to assets/minecraft/zombie/resources.json
+
         ResourceLocation configPath = ResourceLocation.fromNamespaceAndPath(
             entityTypeId.getNamespace(),
             entityTypeId.getPath() + "/resources.json"

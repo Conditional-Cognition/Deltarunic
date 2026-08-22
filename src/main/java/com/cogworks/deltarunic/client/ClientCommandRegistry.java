@@ -6,7 +6,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,7 +13,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 
 import java.util.Comparator;
-import java.util.List;
 
 @EventBusSubscriber(modid = "deltarunic", value = Dist.CLIENT)
 public class ClientCommandRegistry {
@@ -29,13 +27,13 @@ public class ClientCommandRegistry {
                             Minecraft mc = Minecraft.getInstance();
                             if (mc.player == null || mc.level == null) return 0;
 
-                            // 1. First attempt: check entity currently looked at by crosshair
+
                             LivingEntity opponent = null;
                             if (mc.crosshairPickEntity instanceof LivingEntity living) {
                                 opponent = living;
                             }
 
-                            // 2. Fallback: find the nearest living entity within 10 blocks (excluding player)
+
                             if (opponent == null) {
                                 opponent = mc.level.getEntitiesOfClass(LivingEntity.class, mc.player.getBoundingBox().inflate(10.0))
                                         .stream()
@@ -44,7 +42,7 @@ public class ClientCommandRegistry {
                                         .orElse(null);
                             }
 
-                            // 3. Fallback: if no entity nearby, use player as placeholder dummy
+
                             if (opponent == null) {
                                 opponent = mc.player;
                             }
@@ -54,9 +52,7 @@ public class ClientCommandRegistry {
 
                             mc.execute(() -> mc.setScreen(new DeltaruneBattleGui(
                                     mc.player,
-                                    targetOpponent,
-                                    List.of(),
-                                    attackData
+                                    targetOpponent
                             )));
                             return 1;
                         })

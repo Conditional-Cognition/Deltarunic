@@ -12,7 +12,7 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @Mod(value = Deltarunic.MODID, dist = Dist.CLIENT) @SuppressWarnings("removal")
-@EventBusSubscriber(modid = Deltarunic.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD) // Added explicit MOD bus targeting
+@EventBusSubscriber(modid = Deltarunic.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class DeltarunicClient {
     public DeltarunicClient(IEventBus modEventBus, ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);

@@ -23,12 +23,12 @@ public class DeltaruneBattleGui extends Screen {
 
     private final LivingEntity playerEntity;
     private final LivingEntity opponentEntity;
-    private EntityBattleConfig opponentConfig;  // Loaded from data
-    private String currentAttackId;  // Current attack being executed
+    private EntityBattleConfig opponentConfig;
+    private String currentAttackId;
 
     private TurnState currentState = TurnState.ACTION_SELECT;
-    private int selectedActionIndex = 0; // 0: FIGHT, 1: ACT, 2: ITEM, 3: SHIELD
-    private int selectedGridIndex = 0;   // WASD navigation for hotbar/ACT sub-menus
+    private int selectedActionIndex = 0;
+    private int selectedGridIndex = 0;
     private String currentDialogueText;
 
     private List<String> actList = List.of("Check", "Spare");
@@ -45,20 +45,20 @@ public class DeltaruneBattleGui extends Screen {
         this.playerEntity = player;
         this.opponentEntity = opponent;
         
-        // Load the opponent's battle config from data
+
         this.opponentConfig = EntityBattleConfigLoader.loadConfigForEntity(opponent);
         
         if (opponentConfig != null) {
-            // Set ACT list from config
+
             this.actList = opponentConfig.pacificationMethods();
             
-            // Set default attack
+
             this.currentAttackId = opponentConfig.defaultAttack();
             
-            // Get greeting dialogue
+
             this.currentDialogueText = DialogueSelector.selectDialogue(opponentConfig, DialogueState.GREETING);
         } else {
-            // Fallback if no config found
+
             this.currentDialogueText = "* " + opponent.getDisplayName().getString() + " stands menacingly...";
         }
     }
@@ -66,7 +66,7 @@ public class DeltaruneBattleGui extends Screen {
     @Override
     protected void init() {
         super.init();
-        // Exit button
+
         this.addRenderableWidget(
             Button.builder(Component.literal("Exit"), b -> this.onClose())
                 .bounds(10, 10, 50, 20)
@@ -105,7 +105,7 @@ public class DeltaruneBattleGui extends Screen {
     }
 
     private void handleSubMenuNavigation(int keyCode) {
-        if (selectedActionIndex == 0 || selectedActionIndex == 2) { // Hotbar navigation
+        if (selectedActionIndex == 0 || selectedActionIndex == 2) {
             if (keyCode == GLFW.GLFW_KEY_A || keyCode == GLFW.GLFW_KEY_LEFT) {
                 selectedGridIndex = (selectedGridIndex - 1 + 9) % 9;
             } else if (keyCode == GLFW.GLFW_KEY_D || keyCode == GLFW.GLFW_KEY_RIGHT) {
@@ -113,7 +113,7 @@ public class DeltaruneBattleGui extends Screen {
             } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE) {
                 executeSelectedHotbarAction();
             }
-        } else if (selectedActionIndex == 1) { // ACT menu
+        } else if (selectedActionIndex == 1) {
             if (keyCode == GLFW.GLFW_KEY_W || keyCode == GLFW.GLFW_KEY_UP) {
                 selectedGridIndex = Math.max(0, selectedGridIndex - 1);
             } else if (keyCode == GLFW.GLFW_KEY_S || keyCode == GLFW.GLFW_KEY_DOWN) {
@@ -141,7 +141,7 @@ public class DeltaruneBattleGui extends Screen {
             this.currentDialogueText = "* " + opponentEntity.getDisplayName().getString() + " has no attacks. :(";
             this.currentState = TurnState.ACTION_SELECT;
         } else {
-            // Get pre-attack dialogue from config
+
             this.currentDialogueText = DialogueSelector.selectPreAttackDialogue(opponentConfig, currentAttackId);
             this.currentState = TurnState.BATTLEBOX_PHASE;
         }
@@ -198,14 +198,14 @@ public class DeltaruneBattleGui extends Screen {
     private void renderNativeHotbar(GuiGraphics guiGraphics, int startX, int y) {
         if (!(playerEntity instanceof Player player)) return;
 
-        // Draw Vanilla Hotbar Container
+
         guiGraphics.blitSprite(HOTBAR_SPRITE, startX + 28, y, 182, 22);
 
-        // Render Selector
+
         int selectorX = startX + 28 - 1 + (selectedGridIndex * 20);
         guiGraphics.blitSprite(HOTBAR_SELECTION_SPRITE, selectorX, y - 1, 24, 23);
 
-        // Render Hotbar Items
+
         for (int i = 0; i < 9; i++) {
             ItemStack stack = player.getInventory().items.get(i);
             if (!stack.isEmpty()) {
@@ -282,7 +282,7 @@ public class DeltaruneBattleGui extends Screen {
         );
         guiGraphics.pose().scale(battlebox.scale().x, battlebox.scale().y, 1.0f);
 
-        // Render as black box with white outline (matches original)
+
         guiGraphics.fill(0, 0, boxWidth, boxHeight, 0xFF000000);
         guiGraphics.renderOutline(0, 0, boxWidth, boxHeight, 0xFFFFFFFF);
 

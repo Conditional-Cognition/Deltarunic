@@ -12,23 +12,18 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-/**
- * Loads EntityBattleConfig from JSON resource files.
- * Expected path: assets/{namespace}/{entity_id}/resources.json
- */
+
 public class EntityBattleConfigLoader {
     private static final Gson GSON = new Gson();
 
-    /**
-     * Load the full battle configuration for an entity.
-     */
+    
     public static EntityBattleConfig loadConfigForEntity(LivingEntity entity) {
         ResourceLocation entityTypeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         if (entityTypeId == null) {
             return null;
         }
 
-        // Path resolves to assets/minecraft/zombie/resources.json (or similar)
+
         ResourceLocation configPath = ResourceLocation.fromNamespaceAndPath(
             entityTypeId.getNamespace(),
             entityTypeId.getPath() + "/resources.json"
@@ -44,9 +39,7 @@ public class EntityBattleConfigLoader {
         return null;
     }
 
-    /**
-     * Load a battle config by entity ID string (e.g., "minecraft:zombie").
-     */
+    
     public static EntityBattleConfig loadConfigByEntityId(String entityId) {
         ResourceLocation configPath = ResourceLocation.tryParse(entityId + "/resources.json");
         if (configPath == null) {
