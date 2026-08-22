@@ -1,0 +1,19 @@
+{
+  "dialogues": {
+    "1": " rotten figure stumbles towards you.",
+    "2": " rotten figure groans before you.",
+    "3": " rotten figure spawns in."
+  },
+  "dialogue_prefixes": {
+    "before": "A",
+    "after": "The"
+  },
+  "spriteslist": {
+    "texture1": "deltarunic:sprites/zombie1.png",
+    "texture2": "deltarunic:sprites/zombie2.png",
+    "texture3": "deltarunic:sprites/zombie_swing.png",
+    "custom_designation_name": "deltarunic:sprites/zombie_swung.png"
+  },
+  "hurtsprite": "deltarunic:sprites/zombie_hurt.png",
+  "defaultsprite": "texture1"
+}

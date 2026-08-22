@@ -1,4 +1,7 @@
 {
-  "item.deltarunic.firestarter": "Firestarter",
-  "itemGroup.deltarunic": "Deltarunic"
+  "itemGroup.deltarunic": "Deltarunic",
+  "gui.deltarunic_battle": "Deltarunic Battle GUI",
+  "gui.deltarunic_battle.dialogue_prefix": "* ",
+  "gui.deltarunic_battle.wait_for_player_oppenent": "Other player is strategizing...",
+  "gui.deltarunic_battle.username_health_between": ". HP: "
 }

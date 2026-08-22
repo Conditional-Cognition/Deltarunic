@@ -1,7 +1,6 @@
 package com.cogworks.deltarunic.registry;
 
 import com.cogworks.ampersandlib.items.*;
-import com.cogworks.deltarunic.items.*;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;

@@ -1,0 +1,17 @@
+{
+  "dialogues": {
+    "1": " figure stands before you.",
+    "2": " figure glances at his inventory.",
+    "3": " figure stares at you."
+  },
+  "dialogue_prefixes": {
+    "before": "A",
+    "after": "The"
+  },
+  "spriteslist": {
+    "texture1": "deltarunic:sprites/player_default_1.png",
+    "texture2": "deltarunic:sprites/player_default_2.png"
+  },
+  "hurtsprite": "deltarunic:sprites/player_default_hurt.png",
+  "defaultsprite": "texture1"
+}
